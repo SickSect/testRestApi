@@ -1,7 +1,9 @@
 package com.ugina.serviceApi.controller;
 
+import com.ugina.serviceApi.exceptions.NotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,7 +32,11 @@ public class MsgController {
         }
     };
     @GetMapping
-    public String list(){
-        return "Index";
+    public List<Map<String, String>> list(){
+        return msg;
+    }
+    @GetMapping("{id}")
+    public Map<String, String> getByIndex(@PathVariable String id){
+         return msg.stream().filter(msg->msg.get("id").equals(id)).findFirst().orElseThrow(NotFoundException::new);
     }
 }
