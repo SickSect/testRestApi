@@ -62,3 +62,4 @@ public class MsgController {
         msg.remove(msgToDel);
     }
 }
+    //fetch ('/message', {method: 'POST', headers:{'Content-Type': 'application/json'}, body: JSON.stringify({text: 'Fourth message'})}).then(console.log)
