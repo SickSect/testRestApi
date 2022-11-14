@@ -51,7 +51,7 @@ public class MsgController {
 
     @PutMapping("{id}")
     public Map<String, String> update(@PathVariable String id, @RequestBody Map<String, String> info){
-        Map<String, String> msgFromDb = getInfo(info.get("id"));
+        Map<String, String> msgFromDb = getInfo(id);
         msgFromDb.putAll(info);
         msgFromDb.put("id", id);
         return msgFromDb;
