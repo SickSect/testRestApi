@@ -1,16 +1,28 @@
+
+var msgApi = Vue.resource('/message{/id}');
+
+Vue.component('message-row', {
+    props: ['message'],
+    template: '<div><i>{{ message.id }}</i> {{ message.text }}</div>'
+});
+
 Vue.component('messages-list', {
     props: ['messages'],
-    template: '<div>List</div>'
-})
+    template:
+        '<div>' +
+        '   <message-row v-for="message in messages" :key="message.id" :message="message"/>' +
+        '</div>',
+    created: function (){
+        msgApi.get().then(result =>
+        result.json().then(data=>
+        console.log(data)))
+    }
+});
 
 var app = new Vue({
     el: '#app',
-    template: '<messages-list :messages: "messages" />',
+    template: '<messages-list :messages="messages" />',
     data:{
-        messages: [
-            {id: '1', text: 'First'},
-            {id: '2', text: 'Second'},
-            {id: '3', text: 'Third'},
-        ]
+        messages: []
     }
 });
