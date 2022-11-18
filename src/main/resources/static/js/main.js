@@ -1,21 +1,45 @@
 
 var msgApi = Vue.resource('/message{/id}');
 
+Vue.component('message-form',{
+    props: ['messages'],
+    data:function (){
+        return {
+            text: '',
+        }
+    },
+    template:
+        '<div>' +
+            '<input type="text" placeholder="Write here" v-model="text"/>' +
+            '<input type="button" value="Save" v-on:click="save"/>' +
+        '</div>',
+    methods:{
+        save: function (){
+            var msg = { text: this.text};
+            msgApi.save({}, msg).then(result => result.json().then(data => {
+                this.messages.push(data);
+                this.text= '';
+            }))
+        }
+    }
+});
+
 Vue.component('message-row', {
     props: ['message'],
-    template: '<div><i>{{ message.id }}</i> {{ message.text }}</div>'
+    template: '<div><i>({{ message.id }}) </i> {{ message.text }}</div>'
 });
 
 Vue.component('messages-list', {
     props: ['messages'],
     template:
         '<div>' +
-        '   <message-row v-for="message in messages" :key="message.id" :message="message"/>' +
+            '<message-form :messages="messages"/>' +
+            '<message-row v-for="message in messages" :key="message.id" :message="message"/>' +
         '</div>',
     created: function (){
         msgApi.get().then(result =>
         result.json().then(data=>
-        console.log(data)))
+        data.forEach(message => this.messages.push(message))))
     }
 });
 
