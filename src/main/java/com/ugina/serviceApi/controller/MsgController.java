@@ -1,65 +1,49 @@
 package com.ugina.serviceApi.controller;
 
 import com.ugina.serviceApi.exceptions.NotFoundException;
-import org.springframework.stereotype.Controller;
+import com.ugina.serviceApi.repo.MessageRepo;
+import domain.Message;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("message")
 public class MsgController {
-    private int counter = 4;
-    private List<Map<String, String>> msg = new ArrayList<Map<String, String>>(){
-        {
-            add(new HashMap<String, String>() {{
-                put("id", "1");
-                put("text", "First str");
-            }});
-            add(new HashMap<String, String>() {{
-                put("id", "2");
-                put("text", "Second str");
-            }});
-            add(new HashMap<String, String>() {{
-                put("id", "3");
-                put("text", "Third str");
-            }});
-        }
-    };
-    @GetMapping
-    public List<Map<String, String>> list(){
-        return msg;
-    }
-    @GetMapping("{id}")
-    public Map<String, String> getByIndex(@PathVariable String id){
-         return getInfo(id);
+    private final MessageRepo messageRepo;
+
+    @Autowired
+    public MsgController(MessageRepo messageRepo) {
+        this.messageRepo = messageRepo;
     }
 
-    private Map<String, String> getInfo(String id) {
-        return msg.stream().filter(msg -> msg.get("id").equals(id)).findFirst().orElseThrow(NotFoundException::new);
+    @GetMapping
+    public List<Message> list(){
+        return messageRepo.findAll();
+    }
+    @GetMapping("{id}")
+    public Message getByIndex(@PathVariable("id") Message message){
+         return message;
     }
 
     @PostMapping
-    public Map<String, String> addOne(@RequestBody Map<String, String> info){
-        info.put("id", String.valueOf(counter++));
-        msg.add(info);
-        return info;
+    public Message addOne(@RequestBody Message message){
+        return messageRepo.save(message);
     }
 
     @PutMapping("{id}")
-    public Map<String, String> update(@PathVariable String id, @RequestBody Map<String, String> info){
-        Map<String, String> msgFromDb = getInfo(id);
-        msgFromDb.putAll(info);
-        msgFromDb.put("id", id);
-        return msgFromDb;
+    public Message update(
+            @PathVariable("id") Message msgFromDb,
+            @RequestBody Message message){
+        BeanUtils.copyProperties(message, msgFromDb, "id");
+        return messageRepo.save(message);
     }
     @DeleteMapping("{id}")
-    public void deleteMsg(@PathVariable String id){
-        Map<String, String> msgToDel = getInfo(id);
-        msg.remove(msgToDel);
+    public void deleteMsg(@PathVariable("id") Message message){
+        messageRepo.delete(message);
     }
 }
     //fetch ('/message', {method: 'POST', headers:{'Content-Type': 'application/json'}, body: JSON.stringify({text: 'Fourth message'})}).then(console.log)
