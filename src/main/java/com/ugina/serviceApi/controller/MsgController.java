@@ -1,28 +1,27 @@
 package com.ugina.serviceApi.controller;
 
-import com.ugina.serviceApi.exceptions.NotFoundException;
 import com.ugina.serviceApi.repo.MessageRepo;
-import domain.Message;
+import com.ugina.serviceApi.domain.Message;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("message")
 public class MsgController {
-    private final MessageRepo messageRepo;
+    private final MessageRepo messageRep;
 
     @Autowired
     public MsgController(MessageRepo messageRepo) {
-        this.messageRepo = messageRepo;
+        this.messageRep = messageRepo;
     }
 
     @GetMapping
     public List<Message> list(){
-        return messageRepo.findAll();
+        return messageRep.findAll();
     }
     @GetMapping("{id}")
     public Message getByIndex(@PathVariable("id") Message message){
@@ -31,7 +30,8 @@ public class MsgController {
 
     @PostMapping
     public Message addOne(@RequestBody Message message){
-        return messageRepo.save(message);
+        message.setCreationDate(LocalDateTime.now());
+        return messageRep.save(message);
     }
 
     @PutMapping("{id}")
@@ -39,11 +39,11 @@ public class MsgController {
             @PathVariable("id") Message msgFromDb,
             @RequestBody Message message){
         BeanUtils.copyProperties(message, msgFromDb, "id");
-        return messageRepo.save(message);
+        return messageRep.save(msgFromDb);
     }
     @DeleteMapping("{id}")
     public void deleteMsg(@PathVariable("id") Message message){
-        messageRepo.delete(message);
+        messageRep.delete(message);
     }
 }
     //fetch ('/message', {method: 'POST', headers:{'Content-Type': 'application/json'}, body: JSON.stringify({text: 'Fourth message'})}).then(console.log)
