@@ -1,5 +1,7 @@
 package com.ugina.serviceApi.controller;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.ugina.serviceApi.domain.Views;
 import com.ugina.serviceApi.repo.MessageRepo;
 import com.ugina.serviceApi.domain.Message;
 import org.springframework.beans.BeanUtils;
@@ -20,10 +22,12 @@ public class MsgController {
     }
 
     @GetMapping
+    @JsonView (Views.IdName.class)
     public List<Message> list(){
         return messageRep.findAll();
     }
     @GetMapping("{id}")
+    @JsonView (Views.FullMsg.class)
     public Message getByIndex(@PathVariable("id") Message message){
          return message;
     }

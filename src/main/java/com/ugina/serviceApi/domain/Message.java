@@ -1,5 +1,7 @@
 package com.ugina.serviceApi.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
@@ -13,6 +15,7 @@ import java.time.LocalDateTime;
 public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonView(Views.IdName.class)
     private Long id;
 
     public String getText() {
@@ -22,9 +25,11 @@ public class Message {
     public void setText(String text) {
         this.text = text;
     }
-
+    @JsonView(Views.IdName.class)
     private String text;
     @Column(updatable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern ="yyyy-MM-dd HH:mm:ss")
+    @JsonView(Views.FullMsg.class)
     private LocalDateTime creationDate;
     public LocalDateTime getCreationDate() {
         return creationDate;
